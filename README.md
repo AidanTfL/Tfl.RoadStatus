@@ -75,7 +75,7 @@ PS C:\Users\AidanBunceWaters> $lastexitcode
 ```
 
 ```bash
-PS C:\> .\TfL.RoadStatus.ConsoleUI.exe A1 A3 city%20route --apiurl https://api.tfl.gov.uk
+PS C:\> .\TfL.RoadStatus.ConsoleUI.exe RoadWithoutTraffic --apiurl https://api.tfl.gov.uk
 
 RoadWithoutTraffic is not a valid road
 
@@ -134,7 +134,7 @@ Multiple options are supported. You can choose your preference, from the followi
 - Define as environment variables _(useful for CI/CD avoiding needing to parse args)_
 
 
-The config gets mapped as per the following precedence _(lowest -> highest)_: 
+The config gets built as per the following precedence _(lowest -> highest)_: 
 
 ```bash
 app.AddEnvironmentVariables();
