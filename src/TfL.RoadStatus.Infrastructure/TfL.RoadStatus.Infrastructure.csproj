@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Flurl" Version="3.0.2" />
+    <PackageReference Include="Flurl.Http" Version="3.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.18" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.13.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TfL.RoadStatus.Application\TfL.RoadStatus.Application.csproj" />
+    <ProjectReference Include="..\TfL.RoadStatus.Domain\TfL.RoadStatus.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\config.application.exceptions.nswag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\config.infrastructure.clients.nswag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\config.domain.dtos.nswag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+    <Message Importance="High" Text="$(NSwagExe_Core31) run properties/config.domain.dtos.nswag /variables:Configuration=$(Configuration)" />
+    <Message Importance="High" Text="$(NSwagExe_Core31) run properties/config.application.exceptions.nswag /variables:Configuration=$(Configuration)" />
+    <Message Importance="High" Text="$(NSwagExe_Core31) run properties/config.infrastructure.clients.nswag /variables:Configuration=$(Configuration)" />
+
+    <!-- Generates dtos in Tfl.RoadStatus.Domain: TflSwaggerDtos.cs --> 
+    <Exec ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Core31) run properties/config.domain.dtos.nswag /variables:Configuration=$(Configuration)" />
+    
+     <!-- Generates client exception in Tfl.RoadStatus.Application: Exceptions/SwaggerClientException.cs -->
+    <Exec ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Core31) run properties/config.application.exceptions.nswag /variables:Configuration=$(Configuration)" />
+    
+    <!-- Generates interfaces in Tfl.RoadStatus.Application: Interfaces/ISwaggerClient.cs and clients in Tfl.RoadStatus.Infrastructure -->
+    <Exec ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Core31) run properties/config.infrastructure.clients.nswag /variables:Configuration=$(Configuration)" />
+
+    <Delete Files="$(ProjectDir)\obj\$(MSBuildProjectFile).NSwag.targets" /> <!-- This triggers project rebuild -->
+  </Target> 
+
+</Project>

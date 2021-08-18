@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "TfL.RoadStatus.ConsoleUI": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+      //"commandLineArgs": "A1 A2 A3 city%20route --apikey REDACTED"
+    }
+  }
+}
